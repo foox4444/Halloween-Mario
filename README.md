@@ -1,2 +1,2 @@
 # Halloween-Mario
-This was going to be level 1-1 of mario then it became a mario based platformer.
+This was going to be level 1-1 of Mario, but then I decided to make a Mario-themed platformer. I used this project to learn how to make platformers, learn more about making games, and learn how to make games in Pygame. I used one block, but I also have more blocks in my images folder, and I didn't get to use them. (There are 6 blocks in the images folder.) It has coins and a scoring system. You can also restart the game by pressing the "r" key. I did not have time to make the function reset the game completely.
