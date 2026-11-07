@@ -125,7 +125,7 @@ class Flag(Object):
         super().__init__(x, y, 40, 60)
         self.image.fill((0, 200, 0))
 
-def draw(window, player, objects, coins, score, flag, won):
+def draw(window, player, objects, coins, score, flag, won, game_over):
     window.fill("orange")
     player.draw(window)
     for obj in objects:
@@ -144,6 +144,12 @@ def draw(window, player, objects, coins, score, flag, won):
 
         restart_text = font.render("Press R to play again", True, "black")
         window.blit(restart_text, (GAME_WIDTH // 2 - 130, GAME_HEIGHT // 2 + 40))
+    
+    elif game_over:
+        dead_text = font.render("You Died...", True, "darkred")
+        window.blit(dead_text, (GAME_WIDTH // 2 - 60, GAME_HEIGHT // 2))
+        restart_text = font.render("Press R to Respawn / Play Again", True, "black")
+        window.blit(restart_text, (GAME_WIDTH // 2 - 160, GAME_HEIGHT // 2 + 40))
     
     pygame.display.update()
 
@@ -185,27 +191,35 @@ def main(window):
     clock = pygame.time.Clock()
     block_size = 64
     
-    player = Player(10, GAME_HEIGHT - block_size - 50, 50, 50, MARIO_IMAGE)
+    def create_blocks():
+        b = []
+        def make_platform(x, y, count):
+            for i in range(count):
+                b.append(Block(x + i * block_size, y, block_size))
+        make_platform(250, 450, 3)
+        make_platform(700, 450, 2)
+        make_platform(0, 350, 2)
+        make_platform(200, 220, 1)
+        make_platform(425, 100, 2)
+        make_platform(0, GAME_HEIGHT - block_size, 4)
+        return b
     
-    blocks = []
-    def make_platform(x, y, count):
-        for i in range(count):
-            blocks.append(Block(x+ i * block_size, y, block_size))
-    make_platform(250, 450, 3)
-    make_platform(700, 450, 2)
-    make_platform(0, 350, 2)
-    make_platform(200, 220, 1)
-    make_platform(425, 100, 2)
-    make_platform(0, GAME_HEIGHT - block_size, 4)
+    player = Player(10, GAME_HEIGHT - block_size - 50, 50, 50, MARIO_IMAGE)
+    blocks = create_blocks()
     coins = [Coin(285, 400), Coin(65, 300), Coin(215, 170), Coin(465, 50),]
     score = 0
     flag = Flag(700, 400)
     won = False
+    game_over = False
     
     def reset_level():
-        nonlocal player, coins, score, won
+        nonlocal player, coins, score, won, game_over
         player = Player (10, GAME_HEIGHT - block_size - 50, 50, 50, MARIO_IMAGE)
+        blocks = create_blocks()
         coins = [Coin(285, 400), Coin(65, 300), Coin(215, 170), Coin(465, 50),]
+        score = 0
+        won = False
+        game_over = False
     
     run = True
     while run:
@@ -215,28 +229,33 @@ def main(window):
                 break
             
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_UP:
+                if event.key == pygame.K_UP and not won and not game_over:
                     player.jump()
-                if event.key == pygame.K_r and won:
+                if event.key == pygame.K_r and (won or game_over):
                     reset_level()
+        
+        if not won and not game_over:
+            handle_move(player)
+            player.loop(FPS)
+            handle_physics_and_collision(player, blocks)
             
-        handle_move(player)
-        player.loop(FPS)
-        handle_physics_and_collision(player, blocks)
-        for coin in coins[:]:
-            if player.rect.colliderect(coin.rect):
-                coins.remove(coin)
-                score += 1
+            if player.rect.top > GAME_HEIGHT:
+                game_over = True
+
+            for coin in coins[:]:
+                if player.rect.colliderect(coin.rect):
+                    coins.remove(coin)
+                    score += 1
                 
-        if player.rect.colliderect(flag.rect):
-            won= True
-        if won:
+            if player.rect.colliderect(flag.rect):
+                won= True
+        if won or game_over:
             player.x_vel = 0
         clock.tick(FPS)
-        draw(window, player, blocks, coins, score, flag, won)
+        draw(window, player, blocks, coins, score, flag, won, game_over)
 
     pygame.quit()
-    quit()
+    sys.exit()
 
 if __name__ == "__main__" :
     main(window)
