@@ -1,3 +1,3 @@
 # Halloween-Mario
 This was going to be level 1-1 of Mario, but then I decided to make a Mario-themed platformer. I used this project to learn how to make platformers, learn more about making games, and learn how to make games in Pygame. I used one block, but I also have more blocks in my images folder, and I didn't get to use them. (There are 6 blocks in the images folder.) It has coins and a scoring system. You can also restart the game by pressing the "r" key. I did not have time to make the function reset the game completely. You can play the game by using the exe file.
-<img width="990" height="777" alt="image" src="https://github.com/user-attachments/assets/29b37b53-83e7-4095-91c6-d5dd959dbcb7" />
+<img width="300" height="200" alt="image" src="https://github.com/user-attachments/assets/29b37b53-83e7-4095-91c6-d5dd959dbcb7" />
